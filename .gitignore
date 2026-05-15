@@ -1,0 +1,24 @@
+# Keep this repository as a sanitized report only.
+
+# Never commit raw Codex state.
+.codex/
+sessions/
+archived_sessions/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+auth.json
+config.toml
+.codex-global-state.json
+history.jsonl
+session_index.jsonl
+
+# Local generated caches.
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+
+# Optional local scratch.
+tmp/
+scratch/

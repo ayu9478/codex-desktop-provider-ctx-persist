@@ -1,0 +1,94 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Solution Principle</title><style>
+  :root {
+    --bg: #f6f3ec;
+    --panel: #fffdf8;
+    --ink: #20272b;
+    --muted: #667178;
+    --line: #d8d2c7;
+    --accent: #0b6f68;
+    --blue: #2e5f91;
+    --amber: #a65f00;
+    font-family: "Segoe UI", "Microsoft YaHei UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    width: 1280px;
+    min-height: 760px;
+    background:
+      linear-gradient(135deg, rgba(11,111,104,.12), transparent 42%),
+      repeating-linear-gradient(90deg, rgba(32,39,43,.045) 0 1px, transparent 1px 36px),
+      var(--bg);
+    color: var(--ink);
+  }
+  .frame { padding: 42px; }
+  .header { display:flex; justify-content:space-between; gap:24px; align-items:flex-start; margin-bottom:26px; }
+  h1 { margin:0; font-size:34px; letter-spacing:0; }
+  .subtitle { margin:10px 0 0; color:var(--muted); font-size:17px; }
+  .badge { border:1px solid var(--line); border-radius:999px; padding:8px 12px; background:var(--panel); color:var(--accent); font-weight:700; }
+  .grid { display:grid; grid-template-columns: 1fr 1fr; gap:18px; }
+  .panel { background:rgba(255,253,248,.95); border:1px solid var(--line); border-radius:8px; padding:22px; box-shadow:0 18px 36px rgba(39,31,18,.12); }
+  .wide { grid-column:1 / -1; }
+  h2 { margin:0 0 14px; font-size:20px; }
+  .kv { display:grid; grid-template-columns: 180px 1fr; gap:10px; font-size:16px; margin:9px 0; }
+  .key { color:var(--muted); }
+  code, pre { font-family:"Cascadia Mono","Consolas",monospace; }
+  code { background:#eef5f4; color:#075b55; padding:2px 6px; border-radius:6px; }
+  pre { margin:0; white-space:pre-wrap; line-height:1.5; font-size:15px; background:#162225; color:#e8f3ef; border-radius:8px; padding:18px; }
+  .ok { color: var(--accent); font-weight: 800; }
+  .warn { color: var(--amber); font-weight: 800; }
+  .flow { display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:17px; }
+  .step { background:#fff; border:1px solid var(--line); border-radius:8px; padding:11px 13px; }
+  .arrow { color:var(--muted); }
+  .mock { display:grid; grid-template-columns:330px 1fr 290px; gap:12px; height:470px; }
+  .mock-col { background:#fff; border:1px solid var(--line); border-radius:8px; padding:14px; overflow:hidden; }
+  .search { border:1px solid var(--line); border-radius:7px; padding:10px; color:var(--muted); margin-bottom:12px; }
+  .item { border:1px solid var(--line); border-radius:8px; padding:10px; margin-bottom:9px; }
+  .item.active { border-color:var(--accent); box-shadow: inset 4px 0 0 var(--accent); }
+  .pill { display:inline-block; border-radius:999px; background:#edf5f3; color:var(--accent); padding:3px 8px; font-size:12px; margin:7px 4px 6px 0; }
+  .msg { border:1px solid var(--line); border-radius:8px; padding:11px; margin-bottom:10px; background:#fff; }
+  .msg.assistant { background:#f7fbff; border-color:#cbd9e8; }
+  .button { background:var(--accent); color:white; text-align:center; border-radius:7px; padding:12px; font-weight:800; margin-top:12px; }
+  .diagram { display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; align-items:stretch; }
+  .node { background:#fff; border:1px solid var(--line); border-radius:8px; padding:14px; min-height:92px; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:750; }
+  .node.accent { background:#eaf5f3; border-color:var(--accent); color:var(--accent); }
+  .node.fallback { background:#fff4e2; border-color:#d49a3a; color:#8a5200; }
+  .connector { display:flex; align-items:center; justify-content:center; color:var(--muted); font-weight:800; }
+</style></head><body>
+      <div class="frame">
+        <div class="header">
+          <div>
+            <h1>Solution Principle</h1>
+            <p class="subtitle">Recover Codex conversations by reopening native threads first, then falling back to compact context packets only when necessary.</p>
+          </div>
+          <div class="badge">deep-link first solution</div>
+        </div>
+        <div class="grid">
+          <section class="panel wide">
+            <h2>Primary Recovery Path</h2>
+            <div class="diagram">
+              <div class="node">Provider switch makes a thread look missing</div>
+              <div class="node">Search local thread index</div>
+              <div class="node accent">Open codex://threads/&lt;id&gt;</div>
+              <div class="node accent">Continue natively in Codex Desktop</div>
+            </div>
+          </section>
+          <section class="panel wide">
+            <h2>Fallback Path</h2>
+            <div class="flow">
+              <div class="step">Native thread cannot continue</div><div class="arrow">-></div>
+              <div class="step">Generate compact packet</div><div class="arrow">-></div>
+              <div class="step">Load goal + decisions + recent messages</div><div class="arrow">-></div>
+              <div class="step">Continue with current provider</div>
+            </div>
+          </section>
+          <section class="panel">
+            <h2>Default</h2>
+            <p class="ok">Use deep links. Do not re-feed the full transcript.</p>
+          </section>
+          <section class="panel">
+            <h2>Fallback</h2>
+            <p class="warn">Export context only when native recovery fails.</p>
+          </section>
+        </div>
+      </div></body></html>
