@@ -28,6 +28,23 @@ This avoids the token cost of forcing a new model to read a long transcript when
 4. Continue in Codex Desktop when the native thread opens successfully.
 5. Generate a compact provider-neutral context packet only when native continuation fails.
 
+## Quick Usage
+
+If the local `Codex 会话恢复` skill is installed, the simplest natural-language invocation is:
+
+```text
+会话恢复：codex://threads/<thread-id>
+```
+
+The skill should parse the thread id, prefer opening the native Codex Desktop deep link, and avoid exporting long transcripts unless native recovery fails.
+
+Useful variants:
+
+- `会话恢复：codex://threads/<thread-id>`
+- `帮我打开 codex://threads/<thread-id>`
+- `先确认这个会话是否存在：codex://threads/<thread-id>`
+- `复制这个会话的深度链接：<thread-id>`
+
 ## Why This Is More Efficient
 
 Deep-link recovery lets Codex Desktop load its own local thread state. The current model does not need to ingest the full conversation as prompt text, so token usage stays low. The fallback context packet is reserved for edge cases such as provider mismatch, encrypted context incompatibility, or missing local thread state.

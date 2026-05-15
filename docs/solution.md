@@ -60,6 +60,23 @@ flowchart LR
 5. If Codex Desktop opens the original thread and messages can continue, stop there.
 6. If native continuation fails, generate a compact context packet.
 
+## Natural Language Skill Invocation
+
+For the local `Codex 会话恢复` skill, users can invoke recovery directly in chat with:
+
+```text
+会话恢复：codex://threads/<thread-id>
+```
+
+The tool should treat this as a deep-link-first request:
+
+1. Extract `<thread-id>` from the copied Codex Desktop link.
+2. Confirm the target thread exists locally when possible.
+3. Open or copy `codex://threads/<thread-id>`.
+4. Generate a compact fallback context packet only if native recovery cannot continue.
+
+This keeps the common path short and low-token: the model receives the command, but Codex Desktop loads the original thread state through the native link.
+
 ## Why This Saves Tokens
 
 Deep-link recovery does not ask the new model to read the full conversation. It lets Codex Desktop restore the native thread surface and local state.
