@@ -1,6 +1,6 @@
-# Keep this repository as a sanitized report only.
+# 这个仓库只保留脱敏后的方案资料。
 
-# Never commit raw Codex state.
+# 不要提交原始 Codex 状态。
 .codex/
 sessions/
 archived_sessions/
@@ -13,12 +13,12 @@ config.toml
 history.jsonl
 session_index.jsonl
 
-# Local generated caches.
+# 本地生成缓存。
 node_modules/
 .DS_Store
 Thumbs.db
 *.log
 
-# Optional local scratch.
+# 可选的本地临时目录。
 tmp/
 scratch/

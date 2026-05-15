@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset="utf-8"><title>Deep-Link Recovery</title><style>
+<!doctype html><html><head><meta charset="utf-8"><title>深度链接恢复</title><style>
   :root {
     --bg: #f6f3ec;
     --panel: #fffdf8;
@@ -58,32 +58,32 @@
       <div class="frame">
         <div class="header">
           <div>
-            <h1>Deep-Link Recovery</h1>
-            <p class="subtitle">A Codex Desktop thread can be reopened through a native URI without re-feeding the transcript.</p>
+            <h1>深度链接恢复</h1>
+            <p class="subtitle">Codex Desktop 线程可以通过原生 URI 重新打开，不需要重新喂完整 transcript。</p>
           </div>
           <div class="badge">codex://threads/&lt;thread-id&gt;</div>
         </div>
         <div class="grid">
           <section class="panel">
-            <h2>Local Evidence</h2>
-            <div class="kv"><div class="key">Session file</div><div class="ok">Found</div></div>
-            <div class="kv"><div class="key">Global state</div><div class="ok">Thread listed</div></div>
-            <div class="kv"><div class="key">Originator</div><div>Codex Desktop</div></div>
-            <div class="kv"><div class="key">Provider</div><div>current provider</div></div>
+            <h2>本地证据</h2>
+            <div class="kv"><div class="key">Session 文件</div><div class="ok">已找到</div></div>
+            <div class="kv"><div class="key">全局状态</div><div class="ok">线程已记录</div></div>
+            <div class="kv"><div class="key">创建来源</div><div>Codex Desktop</div></div>
+            <div class="kv"><div class="key">Provider</div><div>当前 provider</div></div>
           </section>
           <section class="panel">
-            <h2>Recovery Action</h2>
-            <div class="kv"><div class="key">Command</div><div><code>Start-Process "codex://threads/&lt;id&gt;"</code></div></div>
-            <div class="kv"><div class="key">Codex process</div><div class="ok">Responding</div></div>
-            <div class="kv"><div class="key">Result</div><div>Native thread open path is valid.</div></div>
+            <h2>恢复动作</h2>
+            <div class="kv"><div class="key">命令</div><div><code>Start-Process "codex://threads/&lt;id&gt;"</code></div></div>
+            <div class="kv"><div class="key">Codex 进程</div><div class="ok">有响应</div></div>
+            <div class="kv"><div class="key">结果</div><div>原生线程打开路径有效。</div></div>
           </section>
           <section class="panel wide">
-            <h2>Why This Matters</h2>
+            <h2>为什么重要</h2>
             <div class="flow">
-              <div class="step">Find local thread</div><div class="arrow">-></div>
-              <div class="step">Open deep link</div><div class="arrow">-></div>
-              <div class="step">Continue in Codex Desktop</div><div class="arrow">-></div>
-              <div class="step">Use token-heavy export only if needed</div>
+              <div class="step">找到本地线程</div><div class="arrow">-></div>
+              <div class="step">打开深度链接</div><div class="arrow">-></div>
+              <div class="step">在 Codex Desktop 继续</div><div class="arrow">-></div>
+              <div class="step">必要时才导出上下文</div>
             </div>
           </section>
         </div>

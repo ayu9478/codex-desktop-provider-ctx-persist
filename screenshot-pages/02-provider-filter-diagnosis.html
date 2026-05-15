@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset="utf-8"><title>Visibility Diagnosis</title><style>
+<!doctype html><html><head><meta charset="utf-8"><title>可见性诊断</title><style>
   :root {
     --bg: #f6f3ec;
     --panel: #fffdf8;
@@ -58,29 +58,29 @@
       <div class="frame">
         <div class="header">
           <div>
-            <h1>Visibility Diagnosis</h1>
-            <p class="subtitle">A missing sidebar entry can be an indexing mismatch, not actual conversation loss.</p>
+            <h1>可见性诊断</h1>
+            <p class="subtitle">侧边栏不显示，可能是索引不一致，不一定代表会话真的丢失。</p>
           </div>
-          <div class="badge">local-only inspection</div>
+          <div class="badge">仅本地检查</div>
         </div>
         <div class="grid">
           <section class="panel">
-            <h2>Observed Signals</h2>
-            <div class="kv"><div class="key">Session logs</div><div class="ok">Present</div></div>
-            <div class="kv"><div class="key">Prompt history</div><div class="ok">Present</div></div>
-            <div class="kv"><div class="key">Sidebar ids</div><div class="warn">Partial</div></div>
-            <div class="kv"><div class="key">Provider metadata</div><div class="warn">Mixed / synchronized</div></div>
+            <h2>观察到的信号</h2>
+            <div class="kv"><div class="key">Session 日志</div><div class="ok">存在</div></div>
+            <div class="kv"><div class="key">Prompt 历史</div><div class="ok">存在</div></div>
+            <div class="kv"><div class="key">侧边栏 id</div><div class="warn">不完整</div></div>
+            <div class="kv"><div class="key">Provider 元数据</div><div class="warn">混合或已同步</div></div>
           </section>
           <section class="panel">
-            <h2>Interpretation</h2>
-            <p>The local thread can exist while not appearing in the current sidebar list. A deep link can be used as a direct entry point.</p>
-            <p>Metadata repair may help visibility, but it is higher risk than opening a native deep link.</p>
+            <h2>解释</h2>
+            <p>本地线程可能仍然存在，只是没有出现在当前侧边栏列表中。深度链接可以作为直接入口。</p>
+            <p>修复元数据可能改善可见性，但风险高于直接打开原生深度链接。</p>
           </section>
           <section class="panel wide">
-            <h2>Decision Rule</h2>
-            <pre>Can codex://threads/&lt;id&gt; open the thread?
-  yes -> continue natively
-  no  -> generate compact provider-neutral context packet</pre>
+            <h2>判断规则</h2>
+            <pre>codex://threads/&lt;id&gt; 能打开线程吗？
+  能   -> 原生续聊
+  不能 -> 生成 provider 无关的精简上下文包</pre>
           </section>
         </div>
       </div></body></html>

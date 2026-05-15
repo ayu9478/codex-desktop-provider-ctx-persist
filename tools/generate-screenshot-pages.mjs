@@ -67,79 +67,79 @@ const baseCss = `
 const docs = [
   {
     file: "00-solution-principle.html",
-    title: "Solution Principle",
+    title: "方案原理",
     body: `
       <div class="frame">
         <div class="header">
           <div>
-            <h1>Solution Principle</h1>
-            <p class="subtitle">Recover Codex conversations by reopening native threads first, then falling back to compact context packets only when necessary.</p>
+            <h1>方案原理</h1>
+            <p class="subtitle">优先重新打开 Codex 原生线程；只有必要时才使用精简上下文包兜底。</p>
           </div>
-          <div class="badge">deep-link first solution</div>
+          <div class="badge">深度链接优先</div>
         </div>
         <div class="grid">
           <section class="panel wide">
-            <h2>Primary Recovery Path</h2>
+            <h2>主要恢复路径</h2>
             <div class="diagram">
-              <div class="node">Provider switch makes a thread look missing</div>
-              <div class="node">Search local thread index</div>
-              <div class="node accent">Open codex://threads/&lt;id&gt;</div>
-              <div class="node accent">Continue natively in Codex Desktop</div>
+              <div class="node">切换 provider 后，会话看起来消失</div>
+              <div class="node">搜索本地线程索引</div>
+              <div class="node accent">打开 codex://threads/&lt;id&gt;</div>
+              <div class="node accent">在 Codex Desktop 原生续聊</div>
             </div>
           </section>
           <section class="panel wide">
-            <h2>Fallback Path</h2>
+            <h2>兜底路径</h2>
             <div class="flow">
-              <div class="step">Native thread cannot continue</div><div class="arrow">-></div>
-              <div class="step">Generate compact packet</div><div class="arrow">-></div>
-              <div class="step">Load goal + decisions + recent messages</div><div class="arrow">-></div>
-              <div class="step">Continue with current provider</div>
+              <div class="step">原生线程不能继续</div><div class="arrow">-></div>
+              <div class="step">生成精简上下文包</div><div class="arrow">-></div>
+              <div class="step">加载目标、决策和最近消息</div><div class="arrow">-></div>
+              <div class="step">用当前 provider 继续</div>
             </div>
           </section>
           <section class="panel">
-            <h2>Default</h2>
-            <p class="ok">Use deep links. Do not re-feed the full transcript.</p>
+            <h2>默认做法</h2>
+            <p class="ok">使用深度链接，不重新喂完整 transcript。</p>
           </section>
           <section class="panel">
-            <h2>Fallback</h2>
-            <p class="warn">Export context only when native recovery fails.</p>
+            <h2>兜底做法</h2>
+            <p class="warn">只有原生恢复失败时，才导出上下文。</p>
           </section>
         </div>
       </div>`,
   },
   {
     file: "01-deep-link-validation.html",
-    title: "Deep-Link Recovery",
+    title: "深度链接恢复",
     body: `
       <div class="frame">
         <div class="header">
           <div>
-            <h1>Deep-Link Recovery</h1>
-            <p class="subtitle">A Codex Desktop thread can be reopened through a native URI without re-feeding the transcript.</p>
+            <h1>深度链接恢复</h1>
+            <p class="subtitle">Codex Desktop 线程可以通过原生 URI 重新打开，不需要重新喂完整 transcript。</p>
           </div>
           <div class="badge">codex://threads/&lt;thread-id&gt;</div>
         </div>
         <div class="grid">
           <section class="panel">
-            <h2>Local Evidence</h2>
-            <div class="kv"><div class="key">Session file</div><div class="ok">Found</div></div>
-            <div class="kv"><div class="key">Global state</div><div class="ok">Thread listed</div></div>
-            <div class="kv"><div class="key">Originator</div><div>Codex Desktop</div></div>
-            <div class="kv"><div class="key">Provider</div><div>current provider</div></div>
+            <h2>本地证据</h2>
+            <div class="kv"><div class="key">Session 文件</div><div class="ok">已找到</div></div>
+            <div class="kv"><div class="key">全局状态</div><div class="ok">线程已记录</div></div>
+            <div class="kv"><div class="key">创建来源</div><div>Codex Desktop</div></div>
+            <div class="kv"><div class="key">Provider</div><div>当前 provider</div></div>
           </section>
           <section class="panel">
-            <h2>Recovery Action</h2>
-            <div class="kv"><div class="key">Command</div><div><code>Start-Process "codex://threads/&lt;id&gt;"</code></div></div>
-            <div class="kv"><div class="key">Codex process</div><div class="ok">Responding</div></div>
-            <div class="kv"><div class="key">Result</div><div>Native thread open path is valid.</div></div>
+            <h2>恢复动作</h2>
+            <div class="kv"><div class="key">命令</div><div><code>Start-Process "codex://threads/&lt;id&gt;"</code></div></div>
+            <div class="kv"><div class="key">Codex 进程</div><div class="ok">有响应</div></div>
+            <div class="kv"><div class="key">结果</div><div>原生线程打开路径有效。</div></div>
           </section>
           <section class="panel wide">
-            <h2>Why This Matters</h2>
+            <h2>为什么重要</h2>
             <div class="flow">
-              <div class="step">Find local thread</div><div class="arrow">-></div>
-              <div class="step">Open deep link</div><div class="arrow">-></div>
-              <div class="step">Continue in Codex Desktop</div><div class="arrow">-></div>
-              <div class="step">Use token-heavy export only if needed</div>
+              <div class="step">找到本地线程</div><div class="arrow">-></div>
+              <div class="step">打开深度链接</div><div class="arrow">-></div>
+              <div class="step">在 Codex Desktop 继续</div><div class="arrow">-></div>
+              <div class="step">必要时才导出上下文</div>
             </div>
           </section>
         </div>
@@ -147,76 +147,76 @@ const docs = [
   },
   {
     file: "02-provider-filter-diagnosis.html",
-    title: "Visibility Diagnosis",
+    title: "可见性诊断",
     body: `
       <div class="frame">
         <div class="header">
           <div>
-            <h1>Visibility Diagnosis</h1>
-            <p class="subtitle">A missing sidebar entry can be an indexing mismatch, not actual conversation loss.</p>
+            <h1>可见性诊断</h1>
+            <p class="subtitle">侧边栏不显示，可能是索引不一致，不一定代表会话真的丢失。</p>
           </div>
-          <div class="badge">local-only inspection</div>
+          <div class="badge">仅本地检查</div>
         </div>
         <div class="grid">
           <section class="panel">
-            <h2>Observed Signals</h2>
-            <div class="kv"><div class="key">Session logs</div><div class="ok">Present</div></div>
-            <div class="kv"><div class="key">Prompt history</div><div class="ok">Present</div></div>
-            <div class="kv"><div class="key">Sidebar ids</div><div class="warn">Partial</div></div>
-            <div class="kv"><div class="key">Provider metadata</div><div class="warn">Mixed / synchronized</div></div>
+            <h2>观察到的信号</h2>
+            <div class="kv"><div class="key">Session 日志</div><div class="ok">存在</div></div>
+            <div class="kv"><div class="key">Prompt 历史</div><div class="ok">存在</div></div>
+            <div class="kv"><div class="key">侧边栏 id</div><div class="warn">不完整</div></div>
+            <div class="kv"><div class="key">Provider 元数据</div><div class="warn">混合或已同步</div></div>
           </section>
           <section class="panel">
-            <h2>Interpretation</h2>
-            <p>The local thread can exist while not appearing in the current sidebar list. A deep link can be used as a direct entry point.</p>
-            <p>Metadata repair may help visibility, but it is higher risk than opening a native deep link.</p>
+            <h2>解释</h2>
+            <p>本地线程可能仍然存在，只是没有出现在当前侧边栏列表中。深度链接可以作为直接入口。</p>
+            <p>修复元数据可能改善可见性，但风险高于直接打开原生深度链接。</p>
           </section>
           <section class="panel wide">
-            <h2>Decision Rule</h2>
-            <pre>Can codex://threads/&lt;id&gt; open the thread?
-  yes -> continue natively
-  no  -> generate compact provider-neutral context packet</pre>
+            <h2>判断规则</h2>
+            <pre>codex://threads/&lt;id&gt; 能打开线程吗？
+  能   -> 原生续聊
+  不能 -> 生成 provider 无关的精简上下文包</pre>
           </section>
         </div>
       </div>`,
   },
   {
     file: "03-recovery-ui-workflow.html",
-    title: "Recovery Workflow",
+    title: "恢复工作流",
     body: `
       <div class="frame">
         <div class="header">
           <div>
-            <h1>Recovery Workflow</h1>
-            <p class="subtitle">A local helper can search threads, copy deep links, and export compact fallback packets.</p>
+            <h1>恢复工作流</h1>
+            <p class="subtitle">本地工具可以搜索线程、复制深度链接，并在必要时导出精简兜底包。</p>
           </div>
-          <div class="badge">deep-link first</div>
+          <div class="badge">深度链接优先</div>
         </div>
         <div class="mock">
           <section class="mock-col">
-            <div class="search">Search: provider, project, prompt, thread id</div>
+            <div class="search">搜索：provider、项目、提示词、thread id</div>
             <div class="item active">
-              <strong>Project planning thread</strong><br />
-              <span class="pill">provider: current</span><span class="pill">long session</span>
-              <p>Latest request: continue next development step...</p>
+              <strong>项目规划线程</strong><br />
+              <span class="pill">provider：当前</span><span class="pill">长会话</span>
+              <p>最近请求：继续下一步开发...</p>
             </div>
             <div class="item">
-              <strong>Printer driver thread</strong><br />
-              <span class="pill">short session</span>
-              <p>Latest request: official driver address...</p>
+              <strong>驱动下载线程</strong><br />
+              <span class="pill">短会话</span>
+              <p>最近请求：官方驱动地址...</p>
             </div>
           </section>
           <section class="mock-col">
-            <h2>Preview</h2>
-            <div class="msg"><strong>USER</strong><br />Summarize the project state and next plan.</div>
-            <div class="msg assistant"><strong>ASSISTANT</strong><br />Current milestone, repository status, and next actions...</div>
-            <div class="msg"><strong>USER</strong><br />Continue the next step.</div>
+            <h2>预览</h2>
+            <div class="msg"><strong>用户</strong><br />总结项目状态和下一步计划。</div>
+            <div class="msg assistant"><strong>助手</strong><br />当前里程碑、仓库状态和下一步动作...</div>
+            <div class="msg"><strong>用户</strong><br />继续下一步。</div>
           </section>
           <section class="mock-col">
-            <h2>Actions</h2>
-            <div class="button">Open Deep Link</div>
-            <div class="button" style="background:#2e5f91">Copy codex:// URI</div>
-            <div class="button" style="background:#a65f00">Export Fallback Packet</div>
-            <p style="color:var(--muted);line-height:1.5">Default path avoids prompt bloat. Export only when native recovery fails.</p>
+            <h2>操作</h2>
+            <div class="button">打开深度链接</div>
+            <div class="button" style="background:#2e5f91">复制 codex:// URI</div>
+            <div class="button" style="background:#a65f00">导出兜底包</div>
+            <p style="color:var(--muted);line-height:1.5">默认路径避免 prompt 膨胀。只有原生恢复失败时才导出。</p>
           </section>
         </div>
       </div>`,
@@ -231,4 +231,4 @@ for (const doc of docs) {
   );
 }
 
-console.log(`Wrote ${docs.length} screenshot pages to ${pages}`);
+console.log(`已生成 ${docs.length} 个截图页面：${pages}`);

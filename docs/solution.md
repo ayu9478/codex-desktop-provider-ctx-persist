@@ -1,144 +1,144 @@
-# Solution
+# 方案说明
 
-## Problem
+## 问题
 
-After switching Codex model providers, older conversations may appear to disappear from the sidebar or resume list. In many cases, the local thread data still exists, but Codex Desktop's visible thread list, provider metadata, or recovery state does not surface it.
+切换 Codex 模型供应商或模型之后，旧会话可能会从侧边栏或恢复列表里消失。很多情况下，本地线程数据其实还在，只是 Codex Desktop 当前展示的线程列表、provider 元数据或恢复状态没有把它显示出来。
 
-The expensive workaround is to export the full transcript and feed it to the new model. That works, but it is slow, token-heavy, and unnecessary when Codex Desktop can reopen the original thread natively.
+最笨也最贵的办法，是把完整历史对话导出后再喂给新模型。这个办法能用，但速度慢、token 消耗高，而且当 Codex Desktop 可以原生打开旧线程时，并没有必要这样做。
 
-## Core Principle
+## 核心原理
 
-Codex Desktop already has a native address format for threads:
+Codex Desktop 已经有原生线程地址格式：
 
 ```text
 codex://threads/<thread-id>
 ```
 
-If a local thread can be reopened by this URI, the conversation should be recovered through Codex Desktop itself instead of rebuilding the entire context in a prompt.
+如果本地线程可以通过这个 URI 重新打开，就应该优先让 Codex Desktop 自己恢复线程，而不是把整段上下文重新构造成 prompt。
 
-## Solution Principle Diagram
+## 方案原理图
 
-![Solution principle](../screenshots/00-solution-principle.png)
+![方案原理图](../screenshots/00-solution-principle.png)
 
 ```mermaid
 flowchart TD
-    A["Provider switch"] --> B["Conversation seems missing"]
-    B --> C["Search local thread index"]
-    C --> D["Find thread id"]
-    D --> E["Open codex://threads/<thread-id>"]
-    E --> F{"Thread opens and can continue?"}
-    F -- "Yes" --> G["Continue natively in Codex Desktop"]
-    F -- "No" --> H["Generate compact context packet"]
-    H --> I["New provider reads summary + recent messages"]
-    I --> J["Continue with fallback context"]
+    A["切换 provider 或模型"] --> B["会话看起来消失"]
+    B --> C["搜索本地线程索引"]
+    C --> D["找到 thread id"]
+    D --> E["打开 codex://threads/<thread-id>"]
+    E --> F{"线程能打开并继续吗？"}
+    F -- "能" --> G["在 Codex Desktop 原生续聊"]
+    F -- "不能" --> H["生成精简上下文包"]
+    H --> I["新 provider 读取目标、决策和最近消息"]
+    I --> J["用兜底上下文继续"]
 ```
 
-## Architecture
+## 结构
 
 ```mermaid
 flowchart LR
-    S["~/.codex/sessions"] --> I["Local thread indexer"]
+    S["~/.codex/sessions"] --> I["本地线程索引器"]
     G["~/.codex/.codex-global-state.json"] --> I
-    I --> U["Recovery UI / Skill"]
-    U --> L["Copy or open deep link"]
-    L --> C["Codex Desktop thread"]
-    U --> P["Fallback context packet"]
-    P --> M["Current model"]
+    I --> U["恢复 UI / Skill"]
+    U --> L["复制或打开深度链接"]
+    L --> C["Codex Desktop 线程"]
+    U --> P["兜底上下文包"]
+    P --> M["当前模型"]
 ```
 
-## Recovery Flow
+## 恢复流程
 
-1. Scan local Codex metadata and session logs.
-2. Search by prompt text, provider, project path, modified time, or thread id.
-3. Select the target thread.
-4. Open or copy:
+1. 扫描本地 Codex 元数据和 session 日志。
+2. 按提示词、provider、项目路径、修改时间或 thread id 搜索。
+3. 选择目标线程。
+4. 打开或复制：
 
    ```text
    codex://threads/<thread-id>
    ```
 
-5. If Codex Desktop opens the original thread and messages can continue, stop there.
-6. If native continuation fails, generate a compact context packet.
+5. 如果 Codex Desktop 能打开原线程并继续发消息，到这里就停止，不再导出上下文。
+6. 如果原生续聊失败，再生成精简上下文包。
 
-## Natural Language Skill Invocation
+## 自然语言调用 skill
 
-For the local `Codex 会话恢复` skill, users can invoke recovery directly in chat with:
+对于本地 `Codex 会话恢复` skill，可以直接在聊天里输入：
 
 ```text
 会话恢复：codex://threads/<thread-id>
 ```
 
-The tool should treat this as a deep-link-first request:
+工具应该把这句话理解成“深度链接优先”的恢复请求：
 
-1. Extract `<thread-id>` from the copied Codex Desktop link.
-2. Confirm the target thread exists locally when possible.
-3. Open or copy `codex://threads/<thread-id>`.
-4. Generate a compact fallback context packet only if native recovery cannot continue.
+1. 从复制的 Codex Desktop 链接中提取 `<thread-id>`。
+2. 尽量确认目标线程是否存在于本地。
+3. 打开或复制 `codex://threads/<thread-id>`。
+4. 只有原生恢复不能继续时，才生成精简上下文包。
 
-This keeps the common path short and low-token: the model receives the command, but Codex Desktop loads the original thread state through the native link.
+这条路径最短，也最省 token：模型只接收恢复指令，真正的旧会话状态由 Codex Desktop 通过原生链接加载。
 
-## Why This Saves Tokens
+## 为什么省 token
 
-Deep-link recovery does not ask the new model to read the full conversation. It lets Codex Desktop restore the native thread surface and local state.
+深度链接恢复不会要求新模型读取完整历史对话。它让 Codex Desktop 恢复原来的线程界面和本地状态。
 
-Context export is only needed when native recovery cannot continue. Even then, the packet should be compact:
+只有原生恢复不能继续时，才需要导出上下文。即使要导出，也应该尽量精简：
 
 ```text
-1. Current goal
-2. Important decisions
-3. User constraints
-4. Recent original messages
-5. Full transcript as local archive, not default prompt
+1. 当前目标
+2. 关键决策
+3. 用户约束
+4. 最近几轮原始消息
+5. 完整 transcript 只作为本地归档，不默认塞进 prompt
 ```
 
-## Modes
+## 模式
 
-### Mode 1: Native Deep Link
+### 模式 1：原生深度链接
 
-Default mode.
+默认模式。
 
-Benefits:
+优点：
 
-- Lowest token cost.
-- Keeps the original Codex Desktop conversation surface.
-- Avoids long prompt injection.
-- Can target threads that are not visible in the current sidebar list.
+- token 消耗最低。
+- 保留原来的 Codex Desktop 会话界面。
+- 避免长 prompt 注入。
+- 即使线程不在当前侧边栏，也可以直接定位。
 
-### Mode 2: Compact Context Packet
+### 模式 2：精简上下文包
 
-Fallback mode.
+兜底模式。
 
-Use when:
+适用场景：
 
-- The deep link cannot open the target thread.
-- The thread opens but the current provider cannot continue it.
-- Provider-specific encrypted content or response state is incompatible.
+- 深度链接打不开目标线程。
+- 线程能打开，但当前 provider 不能继续。
+- provider 相关的加密内容或响应状态不兼容。
 
-### Mode 3: Metadata Repair
+### 模式 3：元数据修复
 
-Optional higher-risk mode.
+可选的高风险模式。
 
-This may involve editing provider metadata, global state, or SQLite records. It can improve visibility in the sidebar, but it is not required for the default solution and may not solve provider-specific continuation issues.
+这种方式可能需要编辑 provider 元数据、全局状态或 SQLite 记录。它可能改善侧边栏可见性，但不是默认方案必须步骤，也不一定能解决 provider 续聊兼容问题。
 
-## Recommended Tool Behavior
+## 推荐工具行为
 
-A local skill or helper tool should:
+本地 skill 或辅助工具应该：
 
-- Read local Codex metadata only.
-- Build a searchable thread index.
-- Show thread title, provider, modified time, and recent prompt snippets.
-- Offer "Open Deep Link" and "Copy Deep Link" as primary actions.
-- Offer "Generate Fallback Packet" as a secondary action.
-- Avoid modifying `.codex` state by default.
+- 只读取本地 Codex 元数据。
+- 建立可搜索的线程索引。
+- 显示线程标题、provider、修改时间和最近提示词片段。
+- 把“打开深度链接”和“复制深度链接”作为主要操作。
+- 把“生成兜底上下文包”作为次要操作。
+- 默认不修改 `.codex` 状态。
 
-## Decision Rule
+## 判断规则
 
 ```text
-Can codex://threads/<thread-id> open the original thread?
-  yes -> continue natively
-  no  -> generate compact context packet
+codex://threads/<thread-id> 能打开原线程吗？
+  能   -> 原生续聊
+  不能 -> 生成精简上下文包
 
-Can the opened thread continue with the current provider?
-  yes -> no export needed
-  no  -> generate compact context packet
+打开后的线程能用当前 provider 继续吗？
+  能   -> 不需要导出
+  不能 -> 生成精简上下文包
 ```

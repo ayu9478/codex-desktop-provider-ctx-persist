@@ -1,78 +1,80 @@
-# Codex Context Recovery Solution
+# Codex 桌面版会话恢复方案
 
-This repository provides a practical solution for recovering Codex Desktop conversations after switching model providers.
+这个仓库整理的是一个实用方案：当 Codex Desktop 切换模型供应商或模型之后，旧会话在侧边栏里看起来“消失”时，如何尽量低成本地找回并继续原来的上下文。
 
-The core idea is:
+核心思路：
 
-> Use Codex Desktop's native deep links as the primary recovery path, and use compact context packets only as a fallback.
+> 优先使用 Codex Desktop 原生的会话深度链接恢复；只有原生恢复失败时，才导出精简上下文包作为兜底。
 
-This avoids the token cost of forcing a new model to read a long transcript when Codex Desktop can reopen the original thread directly.
+这样做可以避免把很长的历史对话重新塞给新模型读取。只要 Codex Desktop 能直接打开原来的线程，就让桌面端加载本地会话状态。
 
-## What This Solves
+## 解决的问题
 
-- Conversations appear missing after provider switching.
-- The sidebar or resume list may not show all historical threads.
-- Re-feeding full transcripts to a new model is slow and token-heavy.
-- Provider-specific state may not be portable across model vendors.
+- 切换 provider 或模型后，旧会话不在侧边栏显示。
+- 侧边栏或恢复列表只显示一部分历史线程。
+- 把完整 transcript 重新喂给新模型很慢，也很耗 token。
+- 不同模型供应商之间的 provider 状态不一定能无缝迁移。
 
-## Solution Summary
+## 方案概览
 
-1. Index local Codex threads from local metadata and session logs.
-2. Search and select the target conversation.
-3. Open the native thread link:
+1. 从本地元数据和 session 日志建立 Codex 线程索引。
+2. 搜索并选择要恢复的目标会话。
+3. 打开 Codex 原生线程链接：
 
    ```text
    codex://threads/<thread-id>
    ```
 
-4. Continue in Codex Desktop when the native thread opens successfully.
-5. Generate a compact provider-neutral context packet only when native continuation fails.
+4. 如果原生线程能打开并继续对话，就直接在 Codex Desktop 里续聊。
+5. 只有原生续聊失败时，才生成 provider 无关的精简上下文包。
 
-## Quick Usage
+## 快捷用法
 
-If the local `Codex 会话恢复` skill is installed, the simplest natural-language invocation is:
+如果本地已经安装 `Codex 会话恢复` skill，最简单的自然语言调用方式是：
 
 ```text
 会话恢复：codex://threads/<thread-id>
 ```
 
-The skill should parse the thread id, prefer opening the native Codex Desktop deep link, and avoid exporting long transcripts unless native recovery fails.
+这个 skill 会解析 thread id，优先打开 Codex Desktop 原生深度链接；除非原生恢复失败，否则不会默认导出长篇历史对话。
 
-Useful variants:
+也可以这样说：
 
 - `会话恢复：codex://threads/<thread-id>`
 - `帮我打开 codex://threads/<thread-id>`
 - `先确认这个会话是否存在：codex://threads/<thread-id>`
 - `复制这个会话的深度链接：<thread-id>`
 
-## Why This Is More Efficient
+## 为什么更省 token
 
-Deep-link recovery lets Codex Desktop load its own local thread state. The current model does not need to ingest the full conversation as prompt text, so token usage stays low. The fallback context packet is reserved for edge cases such as provider mismatch, encrypted context incompatibility, or missing local thread state.
+深度链接恢复让 Codex Desktop 自己加载本地线程状态。当前模型只需要理解“打开这个线程”的指令，不需要把完整历史对话作为 prompt 重新读取，所以 token 消耗很低。
 
-## Contents
+精简上下文包只作为兜底方案，用在深度链接无法打开、provider 状态不兼容、本地线程状态缺失等情况。
 
-- [Solution](docs/solution.md): complete principle, architecture, and recovery flow.
-- [Validation Notes](docs/validation-notes.md): local validation results that support the solution.
-- [Privacy Notes](docs/privacy.md): what was removed or masked before publishing.
-- [Upload Checklist](docs/upload-checklist.md): safe publishing checklist.
-- [Screenshots](screenshots): sanitized solution diagrams and workflow images.
-- [Tools](tools): helper for regenerating the sanitized screenshots.
+## 仓库内容
 
-## Principle Diagram
+- [完整方案](docs/solution.md)：原理、结构和恢复流程。
+- [验证记录](docs/validation-notes.md)：支持该方案的本地验证结论。
+- [隐私说明](docs/privacy.md)：发布前删除或脱敏的内容。
+- [上传检查清单](docs/upload-checklist.md)：公开发布前的安全检查。
+- [截图](screenshots)：已脱敏的方案图和流程图。
+- [工具](tools)：用于重新生成截图页面的辅助脚本。
 
-![Solution principle](screenshots/00-solution-principle.png)
+## 原理图
+
+![方案原理图](screenshots/00-solution-principle.png)
 
 ```mermaid
 flowchart LR
-    A["Local Codex storage"] --> B["Thread index"]
-    B --> C["Search and select conversation"]
-    C --> D{"Can native deep link open?"}
-    D -- "Yes" --> E["Open codex://threads/<thread-id>"]
-    E --> F["Continue in Codex Desktop"]
-    D -- "No" --> G["Generate compact context packet"]
-    G --> H["Continue with provider-neutral summary"]
+    A["本地 Codex 存储"] --> B["线程索引"]
+    B --> C["搜索并选择会话"]
+    C --> D{"原生深度链接能打开吗？"}
+    D -- "能" --> E["打开 codex://threads/<thread-id>"]
+    E --> F["在 Codex Desktop 里继续对话"]
+    D -- "不能" --> G["生成精简上下文包"]
+    G --> H["用 provider 无关摘要继续"]
 ```
 
-## Status
+## 当前状态
 
-This is a local, conservative recovery solution. It does not require editing Codex databases for the default path. Metadata repair remains a separate higher-risk option and is intentionally outside the default workflow.
+这是一个本地、保守、低风险的恢复方案。默认路径不需要修改 Codex 数据库。修复元数据可见性属于更高风险的独立方案，不放在默认流程里。

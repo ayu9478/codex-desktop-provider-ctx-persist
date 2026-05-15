@@ -1,91 +1,91 @@
-# Validation Notes
+# 验证记录
 
-These notes summarize the local validation that supports the proposed solution. They are intentionally sanitized and do not include raw Codex logs, database contents, credentials, or full local paths.
+这些记录总结了支持本方案的本地验证结果。内容已经脱敏，不包含原始 Codex 日志、数据库内容、凭据或完整本地路径。
 
-## Validation 1: Native Deep Link Can Open A Thread
+## 验证 1：原生深度链接可以打开线程
 
-Validated URI shape:
+验证的 URI 形式：
 
 ```text
 codex://threads/<thread-id>
 ```
 
-Observed result:
+观察结果：
 
-- The matching local session file existed.
-- The thread id appeared in local Codex state.
-- The session metadata showed it was created by Codex Desktop.
-- Opening the URI caused Codex Desktop to respond.
+- 匹配的本地 session 文件存在。
+- thread id 出现在本地 Codex 状态里。
+- session 元数据显示它由 Codex Desktop 创建。
+- 打开 URI 后，Codex Desktop 有响应。
 
-Conclusion:
+结论：
 
-Native deep links can serve as a direct thread recovery entry point.
+原生深度链接可以作为直接进入旧会话的恢复入口。
 
-Screenshot:
+截图：
 
-![Deep-link validation](../screenshots/01-deep-link-validation.png)
+![深度链接验证](../screenshots/01-deep-link-validation.png)
 
-## Validation 2: Missing Sidebar Entry Does Not Necessarily Mean Data Loss
+## 验证 2：侧边栏不显示不等于数据丢失
 
-Local state showed that a thread can exist in session logs and prompt history even when the current sidebar list does not show every historical thread.
+本地状态显示：即使当前侧边栏列表没有显示全部历史线程，线程仍可能存在于 session 日志和 prompt 历史中。
 
-Observed state:
+观察状态：
 
 ```text
-Local session logs: present
-Prompt history: present
-Sidebar thread list: partial
-Provider metadata: may differ or may have been synchronized
+本地 session 日志：存在
+prompt 历史：存在
+侧边栏线程列表：不完整
+provider 元数据：可能不同，也可能已经同步
 ```
 
-Conclusion:
+结论：
 
-The problem is often visibility or indexing mismatch rather than confirmed conversation loss.
+这个问题通常更像是可见性或索引不一致，而不是已经确认的会话数据丢失。
 
-Screenshot:
+截图：
 
-![Provider diagnosis](../screenshots/02-provider-filter-diagnosis.png)
+![provider 可见性诊断](../screenshots/02-provider-filter-diagnosis.png)
 
-## Validation 3: Older Long Thread Can Be Targeted By Deep Link
+## 验证 3：较早的长线程也能通过深度链接定位
 
-An older long project thread was selected from local history and opened through its native deep link.
+从本地历史中选择了一个较早的长项目线程，并通过它的原生深度链接打开。
 
-Observed result:
+观察结果：
 
-- The target session file existed.
-- The file size indicated a long conversation.
-- The thread id was present in local prompt history.
-- Codex Desktop responded when the deep link was opened.
+- 目标 session 文件存在。
+- 文件体积显示这是一个较长会话。
+- thread id 出现在本地 prompt 历史中。
+- 打开深度链接后 Codex Desktop 有响应。
 
-Conclusion:
+结论：
 
-Deep links can recover historical local threads without requiring the model to re-read the entire transcript.
+深度链接可以恢复历史本地线程，不需要让模型重新读取完整 transcript。
 
-## Validation 4: Context Packet Works As Fallback
+## 验证 4：上下文包可以作为兜底
 
-A local fallback flow generated Markdown/JSON continuation packets from session logs.
+本地兜底流程可以从 session 日志生成 Markdown/JSON 续聊包。
 
-Observed result:
+观察结果：
 
-- The packet can include goal, decisions, recent messages, and a full local archive.
-- It works when a native thread cannot continue.
-- It is less token-efficient than deep-link recovery for long conversations.
+- 上下文包可以包含目标、决策、最近消息和完整本地归档。
+- 当原生线程不能继续时，它可以作为兜底。
+- 对于长对话，它不如深度链接恢复省 token。
 
-Conclusion:
+结论：
 
-Context packets should be a fallback, not the default recovery path.
+上下文包应该作为兜底，而不是默认恢复路径。
 
-Screenshot:
+截图：
 
-![Recovery UI workflow](../screenshots/03-recovery-ui-workflow.png)
+![恢复 UI 流程](../screenshots/03-recovery-ui-workflow.png)
 
-## Final Conclusion
+## 最终结论
 
-Recommended flow:
+推荐流程：
 
 ```text
-Search local threads
-  -> open codex://threads/<thread-id>
-  -> continue natively if possible
-  -> export compact context packet only if native continuation fails
+搜索本地线程
+  -> 打开 codex://threads/<thread-id>
+  -> 能原生续聊就直接继续
+  -> 只有原生续聊失败时，才导出精简上下文包
 ```
