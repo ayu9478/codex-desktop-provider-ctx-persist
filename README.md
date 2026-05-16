@@ -57,8 +57,19 @@
 - [验证记录](docs/validation-notes.md)：支持该方案的本地验证结论。
 - [隐私说明](docs/privacy.md)：发布前删除或脱敏的内容。
 - [上传检查清单](docs/upload-checklist.md)：公开发布前的安全检查。
+- [公开版 Skill](skills/codex-thread-recovery)：可复制到本地 Codex skills 目录使用。
 - [截图](screenshots)：已脱敏的方案图和流程图。
 - [工具](tools)：用于重新生成截图页面的辅助脚本。
+
+## 目录分层
+
+```text
+docs/                         方案说明和验证记录
+skills/codex-thread-recovery/ 公开版 Codex 会话恢复 skill
+screenshots/                  脱敏后的方案截图
+screenshot-pages/             生成截图用的 HTML 源文件
+tools/                        辅助脚本
+```
 
 ## 原理图
 

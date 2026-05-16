@@ -1,0 +1,3 @@
+display_name: Codex 会话恢复
+short_description: 通过原生深度链接优先恢复 Codex Desktop 旧会话。
+default_prompt: 搜索本地 Codex 旧会话，优先打开或复制 codex://threads 深度链接，只有原生恢复失败时才导出精简上下文包。
